@@ -7,8 +7,16 @@ Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "../../.env"));
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?.Replace("${DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD"));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+foreach (var envVar in new[] { "DB_HOST", "DB_PORT", "DB_NAME", "DB_USER", "DB_PASSWORD" })
+{
+    var value = Environment.GetEnvironmentVariable(envVar);
+    if (!string.IsNullOrEmpty(value))
+    {
+        connectionString = connectionString?.Replace($"${{{envVar}}}", value);
+    }
+}
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
