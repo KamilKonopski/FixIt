@@ -3,4 +3,21 @@
 GET {{FixIt.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+### Test rejestracji
+POST http://localhost:5013/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@user.pl",
+  "password": "Password123!",
+  "firstName": "Tester",
+  "lastName": "Manualny"
+}
+### Test logowania
+POST http://localhost:5013/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@user.pl",
+  "password": "Password123!"
+}
