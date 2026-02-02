@@ -1,8 +1,37 @@
+import { Outlet, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import { AppShell, Burger, Group, Text, NavLink, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
+import type { RootState } from "../../store/store";
+
 const MainLayout = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
+
   const [opened, { toggle }] = useDisclosure();
+  const navigate = useNavigate();
+
+  const menuConfig = {
+    Admin: [
+      { label: "Dashboard", path: "/admin/dashboard" },
+      { label: "Użytkownicy", path: "/admin/users" },
+      { label: "Technicy", path: "/admin/technicians" },
+      { label: "Wszystkie Zgłoszenia", path: "/admin/tickets" },
+      { label: "Raporty", path: "/admin/reports" },
+    ],
+    Technician: [
+      { label: "Dashboard", path: "/tech/dashboard" },
+      { label: "Moje Zlecenia", path: "/tech/tickets" },
+      { label: "Do pobrania", path: "/tech/available" },
+    ],
+    User: [
+      { label: "Dashboard", path: "/dashboard" },
+      { label: "Moje Zgłoszenia", path: "/tickets" },
+    ],
+  };
+
+  const currentMenu = menuConfig[user?.role as keyof typeof menuConfig] || [];
 
   return (
     <AppShell
@@ -26,15 +55,17 @@ const MainLayout = () => {
       </AppShell.Header>
       <AppShell.Navbar p="md">
         <Stack gap="xs">
-          <NavLink label="Dashboard" active variant="filled" />
-          <NavLink label="Zgłoszenia" />
-          <NavLink label="Użytkownicy" />
+          {currentMenu.map((item) => (
+            <NavLink
+              key={item.path}
+              label={item.label}
+              onClick={() => navigate(item.path)}
+            />
+          ))}
         </Stack>
       </AppShell.Navbar>
       <AppShell.Main>
-        <Text c="dimmed" size="sm">
-          Witaj w panelu FixIt! Tutaj będą pojawiać się zgłoszenia.
-        </Text>
+        <Outlet />
       </AppShell.Main>
     </AppShell>
   );

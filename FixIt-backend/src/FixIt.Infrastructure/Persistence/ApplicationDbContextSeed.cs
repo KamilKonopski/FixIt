@@ -1,4 +1,5 @@
-﻿using FixIt.Domain.Entities;
+﻿using BC = BCrypt.Net.BCrypt;
+using FixIt.Domain.Entities;
 using FixIt.Domain.Enums;
 
 namespace FixIt.Infrastructure.Persistence;
@@ -13,7 +14,7 @@ public static class ApplicationDbContextSeed
             {
                 Id = Guid.NewGuid(),
                 Email = "admin@fixit.pl",
-                PasswordHash = "Admin123!",
+                PasswordHash = BC.HashPassword("Admin123!"),
                 FirstName = "Główny",
                 LastName = "Administrator",
                 Role = UserRole.Admin
