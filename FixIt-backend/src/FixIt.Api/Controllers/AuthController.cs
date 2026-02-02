@@ -7,6 +7,7 @@ using FixIt.Domain.Enums;
 using FixIt.Domain.Entities;
 using FixIt.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FixIt.Api.Controllers;
 
@@ -57,5 +58,24 @@ public class AuthController : ControllerBase
         var token = _tokenService.CreateToken(user);
 
         return Ok(new AuthResponseDto(token, user.Email, user.Role.ToString()));
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetMe()
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null) return Unauthorized();
+
+        var user = await _context.Users.FindAsync(Guid.Parse(userIdClaim.Value));
+        if (user == null) return Unauthorized();
+
+        return Ok(new
+        {
+            user.Email,
+            user.FirstName,
+            user.LastName,
+            Role = user.Role.ToString()
+        });
     }
 }
