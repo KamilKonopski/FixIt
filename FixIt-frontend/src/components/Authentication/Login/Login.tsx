@@ -49,7 +49,7 @@ const Login = () => {
   };
 
   return (
-    <Container size={420} my={40}>
+    <Container size={420} my={150}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
