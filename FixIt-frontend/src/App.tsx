@@ -53,34 +53,39 @@ const App = () => {
     >
       <BrowserRouter>
         <Routes>
+          {/* PUBLIC */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          {/* REDIRECT ROOT */}
+          <Route path="/" element={<RootRedirect />} />
+          {/* PROTECTED */}
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
-              {/* DOSTĘPNE DLA WSZYSTKICH ZALOGOWANYCH (np. profil) */}
-              <Route path="/settings" element={<div>Ustawienia</div>} />
-              {/* TYLKO DLA USERA */}
+              {/* USER */}
               <Route element={<ProtectedRoute allowedRoles={["User"]} />}>
                 <Route path="/dashboard" element={<UserDashboard />} />
                 <Route path="/tickets" element={<UserTicketList />} />
               </Route>
-              {/* TYLKO DLA TECHNIKA */}
+              {/* TECH */}
               <Route element={<ProtectedRoute allowedRoles={["Technician"]} />}>
-                <Route path="/tech/dashboard" element={<div>Tech Dash</div>} />
+                <Route
+                  path="/tech/dashboard"
+                  element={<div>Tech Dashboard</div>}
+                />
               </Route>
-              {/* TYLKO DLA ADMINA */}
+              {/* ADMIN */}
               <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
                 <Route
                   path="/admin/dashboard"
-                  element={<div>Admin Dash</div>}
+                  element={<div>Admin Dashboard</div>}
                 />
               </Route>
+              {/* COMMON */}
+              <Route path="/settings" element={<div>Ustawienia</div>} />
             </Route>
           </Route>
-          <Route>
-            <Route path="/" element={<RootRedirect />} />
-            <Route path="*" element={<RootRedirect />} />
-          </Route>
+          {/* FALLBACK */}
+          <Route path="*" element={<RootRedirect />} />
         </Routes>
       </BrowserRouter>
     </MantineProvider>

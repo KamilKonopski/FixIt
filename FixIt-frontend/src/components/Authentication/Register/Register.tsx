@@ -63,7 +63,7 @@ const Register = () => {
   };
 
   return (
-    <Container size={460} my={40}>
+    <Container size={460} my={150}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}

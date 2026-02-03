@@ -1,8 +1,5 @@
 @FixIt.Api_HostAddress = http://localhost:5013
 
-GET {{FixIt.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ### Test rejestracji
 POST http://localhost:5013/api/auth/register
 Content-Type: application/json
@@ -21,3 +18,24 @@ Content-Type: application/json
   "email": "test@user.pl",
   "password": "Password123!"
 }
+
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImMxZDExODI3LTJlNTctNDkwNC1hYzQwLTIwZWViN2ZiYjk4MCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InRlc3RAdXNlci5wbCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJmaXJzdE5hbWUiOiJUZXN0ZXIiLCJleHAiOjE3NzA2ODQzOTUsImlzcyI6IkZpeEl0QXBpIiwiYXVkIjoiRml4SXRGcm9udCJ9.F_I6Y0_rv8Gx5k_9Xu1STANcHu65QOiv5e1NLX6HRheVFmyaNMmrtoB_DbKZC5CbNL6Yndb1TNqlg9buzKa8KQ
+
+### Pobieranie wszystkich ticketow
+GET {{FixIt.Api_HostAddress}}/api/tickets
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Tworzenie nowego zgloszenia
+POST {{FixIt.Api_HostAddress}}/api/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Zepsuta drukarka",
+  "description": "Drukarka w biurze nr 5 nie chce drukowac na czarno."
+}
+
+### Przyjmowanie zgloszenia (Claim)
+POST {{FixIt.Api_HostAddress}}/api/tickets/TUTAJ-GUID-Z-BAZY/claim
+Authorization: Bearer {{token}}
