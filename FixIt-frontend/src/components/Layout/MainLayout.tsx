@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { AppShell, Burger, Group, Text, NavLink, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
+import { navigateWithLoader } from "../../common/utils/navigateWithLoader";
+
 import type { RootState } from "../../store/store";
 
 const MainLayout = () => {
@@ -36,7 +38,11 @@ const MainLayout = () => {
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 260, breakpoint: "sm", collapsed: { mobile: !opened } }}
+      navbar={{
+        width: 260,
+        breakpoint: "sm",
+        collapsed: { mobile: !opened },
+      }}
       padding="md"
     >
       <AppShell.Header>
@@ -59,7 +65,7 @@ const MainLayout = () => {
             <NavLink
               key={item.path}
               label={item.label}
-              onClick={() => navigate(item.path)}
+              onClick={() => navigateWithLoader(navigate, item.path)}
             />
           ))}
         </Stack>

@@ -1,8 +1,10 @@
 import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { MantineProvider } from "@mantine/core";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { NavigationProgress } from "@mantine/nprogress";
 import "@mantine/core/styles.css";
+import "@mantine/nprogress/styles.css";
 
 import Login from "./components/Authentication/Login/Login";
 import MainLayout from "./components/Layout/MainLayout";
@@ -51,6 +53,7 @@ const App = () => {
       defaultColorScheme="dark"
       forceColorScheme="dark"
     >
+      <NavigationProgress color="blue" size={2} zIndex={2000} />
       <BrowserRouter>
         <Routes>
           {/* PUBLIC */}
