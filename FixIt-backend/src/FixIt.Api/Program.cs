@@ -1,11 +1,12 @@
 using DotNetEnv;
-using FixIt.Api.Services;
-using FixIt.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
+using FixIt.Api.Services;
+using FixIt.Infrastructure.Persistence;
 
 Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "../../.env"));
 
@@ -71,7 +72,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // ============== SERVICES ===============
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
+        );
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<TokenService>();

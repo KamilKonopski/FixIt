@@ -1,11 +1,14 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { MantineProvider } from "@mantine/core";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { NavigationProgress } from "@mantine/nprogress";
 import "@mantine/core/styles.css";
+import "@mantine/nprogress/styles.css";
 
+import Loader from "./common/components/Loader/Loader";
 import Login from "./components/Authentication/Login/Login";
 import MainLayout from "./components/Layout/MainLayout";
+import NotFound from "./components/NotFound/NotFound";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Register from "./components/Authentication/Register/Register";
 import RootRedirect from "./routes/RootRedirect";
@@ -15,8 +18,6 @@ import UserTicketList from "./components/User/UserTickets/UserTicketList/UserTic
 import { useGetMeQuery } from "./store/auth/authApi";
 import { logout, setCredentials } from "./store/slices/authSlice";
 import type { RootState } from "./store/store";
-
-import { theme } from "./common/theme/theme";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -42,15 +43,12 @@ const App = () => {
   }, [userData, error, dispatch, token]);
 
   if (isLoading) {
-    return <div>Ładowanie sesji...</div>;
+    return <Loader />;
   }
 
   return (
-    <MantineProvider
-      theme={theme}
-      defaultColorScheme="dark"
-      forceColorScheme="dark"
-    >
+    <>
+      <NavigationProgress color="blue" size={2} zIndex={2000} />
       <BrowserRouter>
         <Routes>
           {/* PUBLIC */}
@@ -85,10 +83,10 @@ const App = () => {
             </Route>
           </Route>
           {/* FALLBACK */}
-          <Route path="*" element={<RootRedirect />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </MantineProvider>
+    </>
   );
 };
 
