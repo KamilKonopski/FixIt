@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import type { TicketRequest, TicketResponse } from "./ticketsApi.types";
+import type {
+  GetTicketsParams,
+  PaginatedTicketsResponse,
+  TicketRequest,
+  TicketResponse,
+} from "./ticketsApi.types";
 
 export const ticketsApi = createApi({
   reducerPath: "ticketsApi",
@@ -14,8 +19,11 @@ export const ticketsApi = createApi({
   }),
   tagTypes: ["Tickets"],
   endpoints: (builder) => ({
-    getAllTickets: builder.query<TicketResponse[], void>({
-      query: () => "tickets",
+    getAllTickets: builder.query<PaginatedTicketsResponse, GetTicketsParams>({
+      query: (params) => ({
+        url: "tickets",
+        params,
+      }),
       providesTags: ["Tickets"],
     }),
     createTicket: builder.mutation<TicketResponse, TicketRequest>({
