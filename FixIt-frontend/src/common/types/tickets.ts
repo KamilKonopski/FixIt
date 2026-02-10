@@ -5,6 +5,8 @@ export type TicketStatus =
   | "Resolved"
   | "Closed";
 
+export type SortOption = "Asc" | "Desc";
+
 export interface Ticket {
   id: string;
   title: string;
