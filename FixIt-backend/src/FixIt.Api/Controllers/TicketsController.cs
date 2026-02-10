@@ -22,14 +22,14 @@ namespace FixIt.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllTickets()
+        public async Task<IActionResult> GetAllTickets([FromQuery] TicketQueryParamsDto queryParams)
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var isAdmin = User.IsInRole("Admin");
             var isTechnician = User.IsInRole("Technician");
 
-            var query = _context.Tickets.AsQueryable();
+            IQueryable<Ticket> query = _context.Tickets;
 
             if (!isAdmin && !isTechnician)
             {
@@ -41,8 +41,27 @@ namespace FixIt.Api.Controllers
                     t.TechnicianId == userId || t.Status == TicketStatus.New);
             }
 
+            //Title search
+            if (!string.IsNullOrWhiteSpace(queryParams.Search))
+            {
+                var search = $"%{queryParams.Search}%";
+                query = query.Where(t => EF.Functions.ILike(t.Title, search));
+            }
+
+            //Status Filter
+            if (queryParams.Status.HasValue)
+            {
+                query = query.Where(t => t.Status == queryParams.Status);
+            }
+
+            //SORT
+            query = queryParams.Sort == SortDirection.Asc ? query.OrderBy(t => t.CreatedAt) : query.OrderByDescending(t => t.CreatedAt);
+
+            var totalCount = await query.CountAsync();
+
             var result = await query
-                .OrderByDescending(t => t.CreatedAt)
+                .Skip((queryParams.Page - 1) * queryParams.PageSize)
+                .Take(queryParams.PageSize)
                 .Select(t => new TicketDto(
                     t.Id,
                     t.Title,
@@ -54,7 +73,13 @@ namespace FixIt.Api.Controllers
                 ))
                 .ToListAsync();
 
-            return Ok(result);
+            return Ok(new
+            {
+                totalCount,
+                queryParams.Page,
+                queryParams.PageSize,
+                result
+            });
         }
 
         [HttpPost]
