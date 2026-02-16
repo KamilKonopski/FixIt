@@ -57,6 +57,62 @@ namespace FixIt.Infrastructure.Migrations
                     b.ToTable("Tickets");
                 });
 
+            modelBuilder.Entity("FixIt.Domain.Entities.TicketHistoryLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChangedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedByUserId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketHistoryLogs");
+                });
+
+            modelBuilder.Entity("FixIt.Domain.Entities.TicketNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketNotes");
+                });
+
             modelBuilder.Entity("FixIt.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -108,6 +164,51 @@ namespace FixIt.Infrastructure.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Technician");
+                });
+
+            modelBuilder.Entity("FixIt.Domain.Entities.TicketHistoryLog", b =>
+                {
+                    b.HasOne("FixIt.Domain.Entities.User", "ChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("ChangedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FixIt.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("HistoryLogs")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChangedByUser");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("FixIt.Domain.Entities.TicketNote", b =>
+                {
+                    b.HasOne("FixIt.Domain.Entities.User", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FixIt.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Notes")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("FixIt.Domain.Entities.Ticket", b =>
+                {
+                    b.Navigation("HistoryLogs");
+
+                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }

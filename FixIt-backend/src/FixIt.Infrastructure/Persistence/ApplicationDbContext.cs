@@ -12,5 +12,7 @@ namespace FixIt.Infrastructure.Persistence
 
         public DbSet<User> Users { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<TicketNote> TicketNotes { get; set; }
+        public DbSet<TicketHistoryLog> TicketHistoryLogs { get; set; }
     }
 }
