@@ -82,6 +82,7 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<HistoryLogService>();
 
 var app = builder.Build();
 
