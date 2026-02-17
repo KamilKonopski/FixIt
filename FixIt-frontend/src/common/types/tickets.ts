@@ -17,6 +17,36 @@ export interface Ticket {
   technicianId?: string;
 }
 
+export interface TicketNote {
+  id: string;
+  content: string;
+  createdAt: string;
+  authorId: string;
+  authorFullName: string;
+}
+
+export interface HistoryLog {
+  id: string;
+  description: string;
+  createdAt: string;
+  changedByUserId: string;
+  userFullName: string;
+}
+
+export interface TicketDetails {
+  id: string;
+  title: string;
+  description: string;
+  status: TicketStatus;
+  createdAt: string;
+  clientId: string;
+  clientName: string;
+  technicianId?: string;
+  technicianName?: string;
+  ticketNotes: TicketNote[];
+  historyLogs: HistoryLog[];
+}
+
 export const statusLabelMap: Record<TicketStatus, string> = {
   New: "Nowe",
   Assigned: "Przypisane",
