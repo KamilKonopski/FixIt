@@ -43,7 +43,7 @@ const TicketDetailsModal = ({ ticketId }: TicketDetailsModalProps) => {
           <NotesTab />
         </Tabs.Panel>
         <Tabs.Panel value="history" pt="md">
-          <HistoryTab />
+          <HistoryTab history={ticket?.historyLogs} />
         </Tabs.Panel>
       </Tabs>
     </Box>
