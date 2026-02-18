@@ -6,6 +6,7 @@ using FixIt.Infrastructure.Persistence;
 using FixIt.Domain.Enums;
 using FixIt.Api.Dtos;
 using FixIt.Domain.Entities;
+using FixIt.Api.Services;
 
 namespace FixIt.Api.Controllers
 {
@@ -15,10 +16,12 @@ namespace FixIt.Api.Controllers
     public class TicketsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly HistoryLogService _historyLogService;
 
-        public TicketsController(ApplicationDbContext context)
+        public TicketsController(ApplicationDbContext context, HistoryLogService historyLogService)
         {
             _context = context;
+            _historyLogService = historyLogService;
         }
 
         [HttpGet]
@@ -69,7 +72,11 @@ namespace FixIt.Api.Controllers
                     t.Status,
                     t.CreatedAt,
                     t.ClientId,
-                    t.TechnicianId
+                    $"{t.Client.FirstName} {t.Client.LastName}",
+                    t.TechnicianId,
+                    t.TechnicianId != null
+                    ? $"{t.Technician!.FirstName} {t.Technician.LastName}"
+                    : "Nieprzypisany"
                 ))
                 .ToListAsync();
 
@@ -80,6 +87,53 @@ namespace FixIt.Api.Controllers
                 queryParams.PageSize,
                 result
             });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TicketDetailsDto>> GetTicketDetails(Guid id)
+        {
+            var ticket = await _context.Tickets
+                .Include(t => t.Client)
+                .Include(t => t.Technician)
+                .Include(t => t.Notes).ThenInclude(n => n.Author)
+                .Include(t => t.HistoryLogs).ThenInclude(h => h.ChangedByUser)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (ticket == null) return NotFound("Nie znaleziono takiego zgłoszenia");
+
+            var detailsDto = new TicketDetailsDto(
+                ticket.Id,
+                ticket.Title,
+                ticket.Description,
+                ticket.Status,
+                ticket.CreatedAt,
+                ticket.ClientId,
+                $"{ticket.Client.FirstName} {ticket.Client.LastName}",
+                ticket.TechnicianId,
+                ticket.Technician != null
+                ? $"{ticket.Technician.FirstName} {ticket.Technician.LastName}"
+                : "Nieprzypisany",
+                ticket.Notes
+                    .OrderByDescending(n => n.CreatedAt)
+                    .Select(n => new NoteDto(
+                        n.Id,
+                        n.Content,
+                        n.CreatedAt,
+                        n.AuthorId,
+                        $"{n.Author.FirstName} {n.Author.LastName}"))
+                    .ToList(),
+                ticket.HistoryLogs
+                    .OrderByDescending(h => h.CreatedAt)
+                    .Select(h => new HistoryLogDto(
+                        h.Id,
+                        h.Description,
+                        h.CreatedAt,
+                        h.ChangedByUserId,
+                        $"{h.ChangedByUser.FirstName} {h.ChangedByUser.LastName}"))
+                    .ToList()
+             );
+
+            return Ok(detailsDto);
         }
 
         [HttpPost]
@@ -108,7 +162,8 @@ namespace FixIt.Api.Controllers
         [Authorize(Roles = "Technician,Admin")]
         public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] TicketStatus newStatus)
         {
-            var ticket = await _context.Tickets.FindAsync(id);
+            var ticket = await _context.Tickets
+                .FirstOrDefaultAsync(t => t.Id == id);
             if (ticket == null) return NotFound();
 
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -116,7 +171,11 @@ namespace FixIt.Api.Controllers
             if (!User.IsInRole("Admin") && ticket.TechnicianId != userId)
                 return Forbid();
 
+            string description = $"Zmiana statusu z {ticket.Status} na {newStatus}";
+
             ticket.Status = newStatus;
+
+            await _historyLogService.AddHistoryLog(id, userId, description);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -162,9 +221,10 @@ namespace FixIt.Api.Controllers
             ticket.TechnicianId = technicianId;
             ticket.Status = TicketStatus.Assigned;
 
-            await _context.SaveChangesAsync();
+            await _historyLogService.AddHistoryLog(id, technicianId, "Technik przypisał zgłoszenie do siebie.");
 
-            return Ok("Zgłoszenie zostało przypisane do Ciebie.");
+            await _context.SaveChangesAsync();
+            return Ok("Zgłoszenie zostało przypisane.");
         }
     }
 }

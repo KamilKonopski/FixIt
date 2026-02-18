@@ -13,10 +13,13 @@ namespace FixIt.Domain.Entities
 
         public Guid ClientId { get; set; }
         [ForeignKey("ClientId")]
-        public User Client { get; set; } = null!;
+        public virtual User Client { get; set; } = null!;
 
         public Guid? TechnicianId { get; set; }
         [ForeignKey("TechnicianId")]
-        public User? Technician { get; set; }
+        public virtual User? Technician { get; set; }
+
+        public virtual ICollection<TicketNote> Notes { get; set; } = new List<TicketNote>();
+        public virtual ICollection<TicketHistoryLog> HistoryLogs { get; set; } = new List<TicketHistoryLog>();
     }
 }

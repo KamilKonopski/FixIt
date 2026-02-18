@@ -6,6 +6,7 @@ interface ModalProps {
   maxWidth?: number | string;
   children: React.ReactNode;
   closeOnBackdropClick?: boolean;
+  isButtonClose?: boolean;
   onClose: () => void;
 }
 
@@ -15,6 +16,7 @@ const Modal = ({
   maxWidth = 500,
   children,
   closeOnBackdropClick = true,
+  isButtonClose = false,
   onClose,
 }: ModalProps) => {
   return (
@@ -22,7 +24,7 @@ const Modal = ({
       opened={isOpen}
       onClose={onClose}
       centered
-      withCloseButton={false}
+      withCloseButton={isButtonClose}
       closeOnEscape
       closeOnClickOutside={closeOnBackdropClick}
       keepMounted={keepMounted}

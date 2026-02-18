@@ -36,3 +36,33 @@ export interface PaginatedTicketsResponse {
   pageSize: number;
   result: TicketResponse[];
 }
+
+export interface TicketNote {
+  id: string;
+  content: string;
+  createdAt: string;
+  authorId: string;
+  authorFullName: string;
+}
+
+export interface HistoryLog {
+  id: string;
+  description: string;
+  createdAt: string;
+  changedByUserId: string;
+  userFullName: string;
+}
+
+export interface TicketDetailsResponse {
+  id: string;
+  title: string;
+  description: string;
+  status: TicketStatus;
+  createdAt: string;
+  clientId: string;
+  clientName: string;
+  technicianId?: string;
+  technicianName?: string;
+  ticketNotes: TicketNote[];
+  historyLogs: HistoryLog[];
+}

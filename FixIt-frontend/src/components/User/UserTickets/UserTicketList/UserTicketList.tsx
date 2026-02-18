@@ -52,7 +52,7 @@ const UserTicketList = () => {
 
   return (
     <>
-      <Container size={900}>
+      <Container size={1200}>
         <Flex direction="column" gap="sm">
           <Flex justify="flex-end">
             <Button onClick={() => setIsOpen(true)}>Dodaj zgłoszenie</Button>

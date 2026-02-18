@@ -3,6 +3,7 @@ using System;
 using FixIt.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FixIt.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260212232228_AddTicketRelationsAndAttributes")]
+    partial class AddTicketRelationsAndAttributes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,7 +85,7 @@ namespace FixIt.Infrastructure.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("TicketHistoryLogs");
+                    b.ToTable("TicketHistoryLog");
                 });
 
             modelBuilder.Entity("FixIt.Domain.Entities.TicketNote", b =>
@@ -110,7 +113,7 @@ namespace FixIt.Infrastructure.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("TicketNotes");
+                    b.ToTable("TicketNote");
                 });
 
             modelBuilder.Entity("FixIt.Domain.Entities.User", b =>

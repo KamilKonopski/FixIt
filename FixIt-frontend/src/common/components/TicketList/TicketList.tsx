@@ -7,10 +7,9 @@ import type { Ticket } from "../../types/tickets";
 interface TicketListProps {
   tickets: Ticket[];
   emptyLabel?: string;
-  onItemClick?: (ticket: Ticket) => void;
 }
 
-const TicketList = ({ tickets, emptyLabel, onItemClick }: TicketListProps) => {
+const TicketList = ({ tickets, emptyLabel }: TicketListProps) => {
   if (tickets.length === 0) {
     return (
       <Text c="dimmed" ta="center" mt="lg">
@@ -22,7 +21,7 @@ const TicketList = ({ tickets, emptyLabel, onItemClick }: TicketListProps) => {
   return (
     <Stack gap="sm">
       {tickets.map((ticket) => (
-        <TicketItem key={ticket.id} ticket={ticket} onClick={onItemClick} />
+        <TicketItem key={ticket.id} ticket={ticket} />
       ))}
     </Stack>
   );
