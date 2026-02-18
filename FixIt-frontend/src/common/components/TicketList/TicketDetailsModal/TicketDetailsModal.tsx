@@ -11,9 +11,23 @@ interface TicketDetailsModalProps {
 }
 
 const TicketDetailsModal = ({ ticketId }: TicketDetailsModalProps) => {
-  const { data: ticket, isLoading } = useGetTicketDetailsQuery(ticketId);
+  const {
+    data: ticket,
+    isLoading,
+    isError,
+  } = useGetTicketDetailsQuery(ticketId);
 
-  if (!ticket && !isLoading) return null;
+  if (isLoading) {
+    return (
+      <Box pos="relative">
+        <LoadingOverlay visible />
+      </Box>
+    );
+  }
+
+  if (isError || !ticket) {
+    return null;
+  }
 
   return (
     <Box pos="relative">
@@ -37,7 +51,7 @@ const TicketDetailsModal = ({ ticketId }: TicketDetailsModalProps) => {
           <Tabs.Tab value="history">Historia</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="details" pt="md">
-          {ticket && <DetailsTab ticket={ticket} />}
+          <DetailsTab ticket={ticket} />
         </Tabs.Panel>
         <Tabs.Panel value="notes" pt="md">
           <NotesTab />
